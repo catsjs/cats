@@ -6,6 +6,11 @@ export { default as addContext } from "mochawesome/addContext.js";
 export { default as mocharc } from "./mocharc.cjs";
 const { readJSON } = fsExtra;
 
+export const types = {
+  protocol: "protocol",
+  content: "content",
+};
+
 const parameters = {
   protocol: {
     required: true,
