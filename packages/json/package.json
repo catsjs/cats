@@ -1,0 +1,27 @@
+{
+  "name": "@catsjs/json",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": "https://github.com/catsjs/cats",
+  "author": "Andreas Zahnen",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    }
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "@catsjs/core": "1.0.0",
+    "ajv": "^7.0.3",
+    "ajv-formats": "^1.5.1",
+    "chai-json-schema-ajv": "^5.2.3",
+    "chai-match-pattern": "^1.2.0",
+    "json-schema-migrate": "^1.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^8.1.3"
+  }
+}
