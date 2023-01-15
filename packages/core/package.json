@@ -6,6 +6,9 @@
   "author": "Andreas Zahnen",
   "type": "module",
   "exports": {
+    ".": {
+      "import": "./index.js"
+    },
     "./interface": {
       "require": "./interface.cjs"
     },
