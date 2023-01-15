@@ -1,0 +1,11 @@
+{
+    "name": "cats",
+    "private": true,
+    "scripts": {
+    },
+    "devDependencies": {
+    },
+    "workspaces": [
+        "packages/*"
+    ]
+}
