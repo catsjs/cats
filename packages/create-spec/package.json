@@ -1,0 +1,18 @@
+{
+  "name": "@catsjs/create-spec",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": "https://github.com/catsjs/cats",
+  "author": "Andreas Zahnen",
+  "type": "module",
+  "bin": {
+    "create-spec": "./index.js"
+  },
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "commander": "^10.0.0",
+    "find-up": "^6.3.0",
+    "fs-extra": "^11.1.0",
+    "validate-npm-package-name": "^5.0.0"
+  }
+}
