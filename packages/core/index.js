@@ -1,5 +1,7 @@
-import { resolve } from "path";
+import { resolve, extname } from "path";
 import fsExtra from "fs-extra";
+import { findUpSync } from "find-up";
+import yaml from "js-yaml";
 import initCache from "./cache.js";
 import initResources from "./resources.js";
 export { default as addContext } from "mochawesome/addContext.js";
@@ -15,6 +17,45 @@ const parameters = {
   protocol: {
     required: true,
   },
+};
+
+const CONFIG_FILES = [
+  //'.catsrc.cjs',
+  ".catsrc.js",
+  ".catsrc.yaml",
+  ".catsrc.yml",
+  ".catsrc.json",
+];
+
+const parsers = {
+  yaml: (rcPath) =>
+    fsExtra.readFile(rcPath, "utf8").then((doc) => yaml.load(doc)),
+  js: (rcPath) => {
+    const { default: rc } = import(rcPath);
+    return rc;
+  },
+  json: (rcPath) => fsExtra.readJSON(rcPath),
+};
+
+const loadConfig = async (rcPath) => {
+  let config = {};
+
+  const ext = extname(rcPath);
+  try {
+    if (ext === ".yml" || ext === ".yaml") {
+      config = await parsers.yaml(rcPath);
+    } else if (ext === ".js" || ext === ".cjs") {
+      config = await parsers.js(rcPath);
+    } else {
+      config = await parsers.json(rcPath);
+    }
+  } catch (err) {
+    throw createUnparsableFileError(
+      `Unable to read/parse ${rcPath}: ${err}`,
+      rcPath
+    );
+  }
+  return config;
 };
 
 const validateParameters = (schema, values, requiredBy) => {
@@ -41,11 +82,14 @@ export const init = async (rootDir = process.cwd()) => {
   if (!core) {
     //const rootDir = process.cwd();
     const pkgPath = resolve(rootDir, "package.json");
-    const rcPath = resolve(rootDir, ".catsrc.js");
+    const rcPath = findUpSync(CONFIG_FILES, { cwd: rootDir });
+    //const rcPath = resolve(rootDir, ".catsrc.js");
     console.log("RC", rcPath);
 
     const pkg = await readJSON(pkgPath);
-    const { default: rc } = await import(rcPath);
+    //const { default: rc } = await import(rcPath);
+    const rc = await loadConfig(rcPath);
+    console.log(rc);
     const opts = {
       title: pkg.name,
       description: pkg.description,
@@ -93,7 +137,7 @@ export const init = async (rootDir = process.cwd()) => {
     //TODO: server -> [protocol]
     core = {
       opts,
-      server: protocolPlugin.init(opts),
+      api: protocolPlugin.init(opts),
       ...contentPlugins,
       save: (key, value, context = "GLOBAL") => {
         if (!shared[context]) shared[context] = {};

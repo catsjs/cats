@@ -22,6 +22,8 @@
   "dependencies": {
     "@catsjs/report": "^1.0.0",
     "chai": "^4.3.7",
+    "find-up": "^6.3.0",
+    "js-yaml": "^4.1.0",
     "mocha": "^10.2.0",
     "mochawesome": "^7.1.3"
   },
