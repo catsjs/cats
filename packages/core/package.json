@@ -9,6 +9,9 @@
     ".": {
       "import": "./index.js"
     },
+    "./hooks": {
+      "import": "./hooks.js"
+    },
     "./interface": {
       "require": "./interface.cjs"
     },

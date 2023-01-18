@@ -57,6 +57,7 @@ export function createSpec(
   const mochaOpts = {
     ui: "@catsjs/core/interface",
     reporter: "@catsjs/core/reporter",
+    require: "@catsjs/core/hooks",
     spec: "spec",
     recursive: true,
     timeout: "60s",

@@ -73,7 +73,12 @@ module.exports = function bddOptions(suite) {
      */
 
     context.describe = context.context = function (title, fn) {
-      return createSuite(title, file, fn, common.suite.create);
+      return createSuite(
+        title,
+        file,
+        fn,
+        common.suite.create.bind(common.suite)
+      );
     };
 
     /**
@@ -84,7 +89,12 @@ module.exports = function bddOptions(suite) {
       context.xcontext =
       context.describe.skip =
         function (title, fn) {
-          return createSuite(title, file, fn, common.suite.skip);
+          return createSuite(
+            title,
+            file,
+            fn,
+            common.suite.skip.bind(common.suite)
+          );
         };
 
     /**
@@ -92,7 +102,7 @@ module.exports = function bddOptions(suite) {
      */
 
     context.describe.only = function (title, fn) {
-      return createSuite(title, file, fn, common.suite.only);
+      return createSuite(title, file, fn, common.suite.only.bind(common.suite));
     };
 
     /**

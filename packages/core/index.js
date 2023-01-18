@@ -142,24 +142,49 @@ export const init = async (rootDir = process.cwd()) => {
 
     const shared = {};
 
+    const save = (key, value, context = "GLOBAL") => {
+      if (!shared[context]) shared[context] = {};
+      shared[context][key] = value;
+      if (rc.verbose) {
+        console.log("SAVED", key, context);
+      }
+    };
+
+    const load = (key, context = "GLOBAL") => {
+      if (!shared[context]) shared[context] = {};
+      return shared[context][key];
+    };
+
+    const loadOr = (key, or, context = "GLOBAL") => {
+      return shared[context] && shared[context][key] ? load(key, context) : or;
+    };
+
+    const setup = async (title, fn) => {
+      const key = "__HOOKS__";
+      const value = await fn();
+
+      save(key, [...loadOr(key, []), { title, value }]);
+    };
+
     //TODO: server -> [protocol]
     core = {
       opts,
       api: protocolPlugin.init(opts),
       ...contentPlugins,
-      save: (key, value, context = "GLOBAL") => {
-        if (!shared[context]) shared[context] = {};
-        shared[context][key] = value;
-        if (rc.verbose) {
-          console.log("SAVED", key, context);
-        }
-      },
-      load: (key, context = "GLOBAL") => {
-        if (!shared[context]) shared[context] = {};
-        return shared[context][key];
-      },
+      save,
+      load,
+      loadOr,
+      setup,
     };
   }
 
   return core;
+};
+
+export const getHooks = () => {
+  if (!core) {
+    console.error("CORE NOT LOADED YET");
+    return [];
+  }
+  return core.loadOr("__HOOKS__", []);
 };

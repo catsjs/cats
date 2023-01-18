@@ -7,12 +7,28 @@ const packageJson = require("./package.json");
 function copyOptions(source, target) {
   target.options = source.options || {};
 
-  for (let i = 0; i < target.tests.length; i++) {
-    target.tests[i].options = source.tests[i].options || {};
+  if (target.tests) {
+    for (let i = 0; i < target.tests.length; i++) {
+      target.tests[i].options = source.tests[i].options || {};
+    }
   }
 
-  for (let i = 0; i < target.suites.length; i++) {
-    copyOptions(source.suites[i], target.suites[i]);
+  if (target.suites) {
+    for (let i = 0; i < target.suites.length; i++) {
+      copyOptions(source.suites[i], target.suites[i]);
+    }
+  }
+
+  if (target.beforeHooks) {
+    for (let i = 0; i < target.beforeHooks.length; i++) {
+      target.beforeHooks[i].options = source._beforeAll[i].options || {};
+    }
+  }
+
+  if (target.afterHooks) {
+    for (let i = 0; i < target.afterHooks.length; i++) {
+      target.afterHooks[i].options = source._afterAll[i].options || {};
+    }
   }
 }
 
@@ -54,6 +70,10 @@ function CatsReporter(runner, options) {
     saveJson: true,
     saveHtml: true,
     htmlModule: "@catsjs/report",
+    //htmlModule: "mochawesome-report-generator",
+    showSkipped: true,
+    showPending: true,
+    showHooks: "always",
   };
 
   Mochawesome.call(this, runner, options);
@@ -63,6 +83,18 @@ function CatsReporter(runner, options) {
       copyOptions(
         this.runner.suite.suites[i],
         this.output.results[0].suites[i]
+      );
+    }
+    for (let i = 0; i < this.runner.suite._beforeAll.length; i++) {
+      copyOptions(
+        this.runner.suite._beforeAll[i],
+        this.output.results[0].beforeHooks[i]
+      );
+    }
+    for (let i = 0; i < this.runner.suite._afterAll.length; i++) {
+      copyOptions(
+        this.runner.suite._afterAll[i],
+        this.output.results[0].afterHooks[i]
       );
     }
 
