@@ -98,6 +98,8 @@ function CatsReporter(runner, options) {
       );
     }
 
+    this.output.project = this.runner.suite.project;
+
     this.output.meta.cats = {
       version: packageJson.version,
       options: {},
