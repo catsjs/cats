@@ -1,12 +1,64 @@
-const Mocha = require("mocha");
+//const Mocha = require("mocha");
 const Test = require("mocha/lib/test");
 const Common = require("mocha/lib/interfaces/common");
+var EVENT_FILE_PRE_REQUIRE =
+  require("mocha/lib/suite").constants.EVENT_FILE_PRE_REQUIRE;
 
-//TODO: sync with original
-module.exports = Mocha.interfaces["bdd-options"] = function (suite) {
+const createSuite = (options, file, fn, create) => {
+  const title = typeof options === "object" ? options.title : options;
+  const opts = typeof options === "object" ? options : {};
+
+  const suite = create({ title, file, fn: wrap(fn, opts, true) });
+  suite.options = opts;
+
+  return suite;
+};
+
+const createTest = (options, fn) => {
+  const title = typeof options === "object" ? options.title : options;
+  const opts = typeof options === "object" ? options : {};
+
+  const test = new Test(title, wrap(fn, opts));
+  test.body = (fn || "").toString();
+  test.options = opts;
+
+  return test;
+};
+
+const isChain = (obj) => !!obj && !!obj.ctx && !!obj.end;
+
+const hasSlow = (options) =>
+  !!options &&
+  (typeof options.slow === "number" || typeof options.slow === "string");
+
+const hasContext = (options) => hasSlow(options);
+
+const wrap = (fn, options, isSuite) => {
+  if (!fn && !hasContext(options)) {
+    return fn;
+  }
+
+  //TODO: timeout, retries, bail && isSuite
+  return function (done) {
+    if (hasSlow(options)) {
+      this.slow(options.slow);
+    }
+
+    const result = fn.call(this, done);
+
+    if (isChain(result)) {
+      result.ctx(this).end(done);
+      return undefined;
+    }
+
+    return result;
+  };
+};
+
+module.exports = function bddOptions(suite) {
   var suites = [suite];
 
-  suite.on("pre-require", function (context, file, mocha) {
+  suite.on(EVENT_FILE_PRE_REQUIRE, function (context, file, mocha) {
     var common = Common(suites, context, mocha);
 
     context.before = common.before;
@@ -20,26 +72,8 @@ module.exports = Mocha.interfaces["bdd-options"] = function (suite) {
      * and/or tests.
      */
 
-    context.describe = context.context = function (options, fn) {
-      let newSuite;
-
-      if (typeof options === "object") {
-        newSuite = common.suite.create({
-          title: options.title,
-          file: file,
-          fn: fn,
-        });
-        newSuite.options = options;
-      } else {
-        newSuite = common.suite.create({
-          title: options,
-          file: file,
-          fn: fn,
-        });
-        newSuite.options = {};
-      }
-
-      return newSuite;
+    context.describe = context.context = function (title, fn) {
+      return createSuite(title, file, fn, common.suite.create);
     };
 
     /**
@@ -50,11 +84,7 @@ module.exports = Mocha.interfaces["bdd-options"] = function (suite) {
       context.xcontext =
       context.describe.skip =
         function (title, fn) {
-          return common.suite.skip({
-            title: title,
-            file: file,
-            fn: fn,
-          });
+          return createSuite(title, file, fn, common.suite.skip);
         };
 
     /**
@@ -62,11 +92,7 @@ module.exports = Mocha.interfaces["bdd-options"] = function (suite) {
      */
 
     context.describe.only = function (title, fn) {
-      return common.suite.only({
-        title: title,
-        file: file,
-        fn: fn,
-      });
+      return createSuite(title, file, fn, common.suite.only);
     };
 
     /**
@@ -75,22 +101,13 @@ module.exports = Mocha.interfaces["bdd-options"] = function (suite) {
      * acting as a thunk.
      */
 
-    context.it = context.specify = function (options, fn) {
+    context.it = context.specify = function (title, fn) {
       var suite = suites[0];
       if (suite.isPending()) {
         fn = null;
       }
-
-      let test;
-      if (typeof options === "object") {
-        test = new Test(options.title, fn);
-        test.options = options;
-      } else {
-        test = new Test(options, fn);
-        test.options = {};
-      }
+      var test = createTest(title, fn);
       test.file = file;
-
       suite.addTest(test);
       return test;
     };
@@ -122,3 +139,6 @@ module.exports = Mocha.interfaces["bdd-options"] = function (suite) {
     };
   });
 };
+
+module.exports.description =
+  "BDD or RSpec style with options and arrow functions";
