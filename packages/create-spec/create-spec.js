@@ -59,6 +59,8 @@ export function createSpec(
     reporter: "@catsjs/core/reporter",
     spec: "spec",
     recursive: true,
+    timeout: "60s",
+    slow: "500ms",
   };
   fs.writeFileSync(
     join(root, ".mocharc.json"),
