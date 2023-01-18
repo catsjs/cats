@@ -84,12 +84,16 @@ export const init = async (rootDir = process.cwd()) => {
     const pkgPath = resolve(rootDir, "package.json");
     const rcPath = findUpSync(CONFIG_FILES, { cwd: rootDir });
     //const rcPath = resolve(rootDir, ".catsrc.js");
-    console.log("RC", rcPath);
 
     const pkg = await readJSON(pkgPath);
     //const { default: rc } = await import(rcPath);
     const rc = await loadConfig(rcPath);
-    console.log(rc);
+
+    if (rc.verbose) {
+      console.log("RC", rcPath);
+      console.log(rc);
+    }
+
     const opts = {
       title: pkg.name,
       description: pkg.description,
@@ -100,7 +104,9 @@ export const init = async (rootDir = process.cwd()) => {
       resources: initResources({ ...rc, rootDir }),
       rootDir,
     };
-    console.log("OPTS", opts);
+    if (rc.verbose) {
+      console.log("OPTS", opts);
+    }
 
     validateParameters(parameters, opts, "core");
 
@@ -112,7 +118,9 @@ export const init = async (rootDir = process.cwd()) => {
       )
     );
 
-    console.log("PLUGINS", resolvedPlugins);
+    if (rc.verbose) {
+      console.log("PLUGINS", resolvedPlugins);
+    }
 
     const protocolPlugin = resolvedPlugins.find(
       (plugin) => plugin.type === "protocol" && plugin.name === protocol
@@ -142,7 +150,9 @@ export const init = async (rootDir = process.cwd()) => {
       save: (key, value, context = "GLOBAL") => {
         if (!shared[context]) shared[context] = {};
         shared[context][key] = value;
-        console.log("SAVED", key, context);
+        if (rc.verbose) {
+          console.log("SAVED", key, context);
+        }
       },
       load: (key, context = "GLOBAL") => {
         if (!shared[context]) shared[context] = {};

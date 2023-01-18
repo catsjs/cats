@@ -39,7 +39,7 @@ const init = (opts) => {
 // TODO: replace functions in expected recursively
 const cleanupError = (error) => {
   delete error.stack;
-  console.log("ERROR MSG", error.message);
+  //console.log("ERROR MSG", error.message);
   error.message = error.message.replace(
     /'function (is[A-Za-z]+)\((?:value)?\) \{\.\.\.\}'/,
     "$1"
