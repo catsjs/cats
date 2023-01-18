@@ -1,32 +1,12 @@
 import { agent, Test } from "supertest";
 import { addContext } from "@catsjs/core";
-import methods from "methods";
 
-agent.prototype.context = function (context) {
-  this.testContext = context;
+Test.prototype.ctx = function (context) {
+  this.context = context;
   return this;
 };
 
-// override HTTP verb methods
-methods.forEach(function (method) {
-  var original = agent.prototype[method];
-  //console.log('ORIG', original);
-  agent.prototype[method] = function (url, fn) {
-    // eslint-disable-line no-unused-vars
-    var req = original.call(this, url, fn);
-
-    req.context = this.testContext;
-    delete this.testContext;
-
-    //console.log('REQ', req);
-
-    return req;
-  };
-});
-
 const originalAssert = Test.prototype.assert;
-
-//console.log('ASS', Test.prototype)
 
 Test.prototype.assert = function (resError, res, fn) {
   //TODO: cfg showHeaders, showBody, truncateBody, onlyOnFailure, etc.
