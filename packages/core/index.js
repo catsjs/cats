@@ -2,10 +2,12 @@ import { resolve, extname } from "path";
 import fsExtra from "fs-extra";
 import { findUpSync } from "find-up";
 import yaml from "js-yaml";
+import mocha from "mocha/lib/cli/index.js";
+export { default as addContext } from "mochawesome/addContext.js";
+
 import initCache from "./cache.js";
 import initResources from "./resources.js";
-export { default as addContext } from "mochawesome/addContext.js";
-export { default as mocharc } from "./mocharc.cjs";
+
 const { readJSON } = fsExtra;
 
 export const types = {
@@ -94,6 +96,12 @@ export const init = async (rootDir = process.cwd()) => {
       console.log(rc);
     }
 
+    const mocharc = mocha.loadRc();
+
+    if (rc.verbose) {
+      console.log("MOCHARC", mocharc);
+    }
+
     const opts = {
       title: pkg.name,
       description: pkg.description,
@@ -103,6 +111,7 @@ export const init = async (rootDir = process.cwd()) => {
       cache: initCache({ ...rc, rootDir }),
       resources: initResources({ ...rc, rootDir }),
       rootDir,
+      mocha: mocharc,
     };
     if (rc.verbose) {
       console.log("OPTS", opts);
