@@ -78,3 +78,5 @@ live-editor/report/
 dist/
 dev/
 packages/editor/report/
+
+**/.DS_Store

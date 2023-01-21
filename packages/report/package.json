@@ -4,7 +4,53 @@
   "license": "MIT",
   "repository": "https://github.com/catsjs/cats",
   "author": "Andreas Zahnen",
-  "scripts": {},
-  "dependencies": {},
-  "devDependencies": {}
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "require": "./src/components/common/index.jsx"
+    },
+    "./package.json": {
+      "require": "./package.json"
+    }
+  },
+  "scripts": {
+    "start": "webpack-dev-server --mode development --port 8000",
+    "build": "NODE_ENV=production webpack --mode production && cp dist/app.css dist/app.inline.css",
+    "test": "mocha",
+    "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src test"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "highlight.js": "^10.2.0",
+    "markdown-to-jsx": "^7.1.1",
+    "polished": "^4.1.0",
+    "pretty-ms": "^7.0.0",
+    "prop-types": "^15",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-hot-loader": "^4",
+    "styled-components": "^5.2.0",
+    "styled-media-query": "^2.1.2",
+    "typeface-roboto": "^1.1.13",
+    "victory": "^35.0.9"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.10.5",
+    "@hot-loader/react-dom": "^17.0.1",
+    "@neutrinojs/airbnb": "^9.4.0",
+    "@neutrinojs/mocha": "^9.4.0",
+    "@neutrinojs/react": "^9.4.0",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
+    "deepmerge": "^4.2.2",
+    "eslint": "^7",
+    "eslint-config-prettier": "^7.2.0",
+    "html-entities": "^2.1.0",
+    "mocha": "^8",
+    "neutrino": "^9.4.0",
+    "react-refresh": "^0.9.0",
+    "webpack": "^4",
+    "webpack-cli": "^3",
+    "webpack-dev-server": "^3"
+  }
 }

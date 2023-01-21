@@ -1,5 +1,6 @@
 const Mochawesome = require("mochawesome");
 const { log } = require("mochawesome/src/utils");
+const Base = require("mocha/lib/reporters/base");
 
 const marge = require("./marge.cjs");
 const packageJson = require("./package.json");
@@ -78,6 +79,9 @@ function CatsReporter(runner, options) {
 
   Mochawesome.call(this, runner, options);
 
+  //TODO: not passed through, needed for console diff, does mochawesome have a limit as well?
+  Base.maxDiffSize = 16384;
+
   this.done = (failures, exit) => {
     for (let i = 0; i < this.runner.suite.suites.length; i++) {
       copyOptions(
@@ -101,7 +105,9 @@ function CatsReporter(runner, options) {
     this.output.project = this.runner.suite.project;
 
     this.output.meta.cats = {
+      name: "cats",
       version: packageJson.version,
+      link: packageJson.repository,
       options: {},
     };
 
