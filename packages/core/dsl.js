@@ -105,22 +105,74 @@ const apply = async (spec) => {
   }
 
   for (let i = 0; i < suites.length; i++) {
-    const { tests, ...options } = suites[i];
+    const { tests, generators, data, ...options } = suites[i];
 
-    describe(options, () => {
-      if (!Array.isArray(tests)) {
-        return;
-      }
+    suite(tests, generators, data, options);
+  }
+};
 
-      for (let j = 0; j < tests.length; j++) {
-        const { request, assertions, ...options } = tests[j];
+const suite = (tests, generators, data, options) => {
+  describe(options, () => {
+    if (Array.isArray(tests)) {
+      for (let i = 0; i < tests.length; i++) {
+        const { request, assertions, ...options } = tests[i];
 
-        it(options, () => {
-          if (request) {
-            return ass(agent(request), assertions);
-          }
+        test(request, assertions, {
+          ...options,
+          yml: yaml.dump(tests[i], { indent: 2, noArrayIndent: true }),
         });
       }
-    });
+    }
+
+    if (Array.isArray(generators)) {
+      for (let i = 0; i < generators.length; i++) {
+        const { each, request, assertions, ...options } = generators[i];
+
+        generator(each, request, assertions, data, {
+          ...options,
+          yml: yaml.dump(generators[i], { indent: 2, noArrayIndent: true }),
+        });
+      }
+    }
+  });
+};
+
+const test = (request, assertions, options) => {
+  it(options, () => {
+    if (request) {
+      return ass(agent(request), assertions);
+    }
+  });
+};
+
+//TODO: load shared
+const generator = (each, request, assertions, data, options) => {
+  if (!data || !Array.isArray(data[each])) {
+    console.error("each: " + each + " not found");
+    return;
   }
+
+  for (let i = 0; i < data[each].length; i++) {
+    const current = data[each][i];
+
+    test(
+      {
+        ...request,
+        path: request.path ? subst(request.path, current) : undefined,
+      },
+      assertions,
+      {
+        ...options,
+        title: options.title ? subst(options.title, current) : undefined,
+        description: options.description
+          ? subst(options.description, current)
+          : undefined,
+      }
+    );
+  }
+};
+
+//TODO: matcher, objects
+const subst = (str, val) => {
+  return str.replaceAll(/\$\{\.\}/g, val);
 };
