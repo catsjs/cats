@@ -1,6 +1,17 @@
 import { agent, Test } from "supertest";
 import { addContext } from "@catsjs/core";
 
+export const methods = [
+  "get",
+  "post",
+  "patch",
+  "put",
+  "delete",
+  "del",
+  "options",
+  "head",
+];
+
 Test.prototype.ctx = function (context) {
   this.context = context;
   return this;

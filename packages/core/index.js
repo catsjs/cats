@@ -22,7 +22,9 @@ const parameters = {
 };
 
 const dsl = {
+  request: undefined,
   actions: {},
+  assertions: {},
 };
 
 const CONFIG_FILES = [
@@ -85,6 +87,10 @@ const validatePlugin = (plugin, name, opts) => {
 const applyDsl = (plugin, name) => {
   if (!plugin.dsl) return;
 
+  if (plugin.type === types.protocol) {
+    dsl.request = plugin.dsl.request;
+  }
+
   if (plugin.dsl.actions) {
     Object.keys(plugin.dsl.actions).forEach((action) => {
       if (dsl.actions[action]) {
@@ -96,7 +102,20 @@ const applyDsl = (plugin, name) => {
       dsl.actions[action] = plugin.dsl.actions[action];
     });
   }
+
+  if (plugin.dsl.assertions) {
+    Object.keys(plugin.dsl.assertions).forEach((assertion) => {
+      if (dsl.assertions[assertion]) {
+        throw new Error(
+          `DSL assertion '${assertion}' does already exist (provided by ${name}).`
+        );
+      }
+
+      dsl.assertions[assertion] = plugin.dsl.assertions[assertion];
+    });
+  }
 };
+
 const loadPlugin = async (name) =>
   await import(name).then((plugin) => plugin.default);
 

@@ -30,28 +30,25 @@ const loadDsl = async () => {
   }
 };
 
-const agent = (req) => {
-  const res = api[req.method.toLowerCase()](req.path);
-
-  //TODO: headers, redirects, etc
-
-  if (req.headers) {
-    Object.keys(req.headers).forEach((header) => {
-      res.set(header, req.headers[header]);
-    });
-  }
-
-  return res;
-};
-
-const ass = (req, assertions = []) => {
+const assert = (req, title, assertions = []) => {
   let res = req;
 
   //TODO: body, etc
   assertions.forEach((assertion) => {
-    if (assertion.status) {
-      res = res.expect(assertion.status);
+    const { type, ...parameters } = assertion;
+
+    const typ =
+      !type && Object.keys(parameters).length === 1
+        ? Object.keys(parameters)[0]
+        : type;
+
+    if (!dsl.assertions[typ]) {
+      throw new Error(
+        `DSL assertion '${typ}' does not exist (required by '${title}').`
+      );
     }
+
+    dsl.assertions[typ](parameters, req);
   });
 
   return res;
@@ -74,7 +71,7 @@ const apply = async (spec) => {
 
           if (!dsl.actions[type]) {
             throw new Error(
-              `DSL action '${action}' does not exist (required by ${title}).`
+              `DSL action '${type}' does not exist (required by '${title}').`
             );
           }
 
@@ -121,11 +118,12 @@ const suite = (tests, generators, data, options) => {
   });
 };
 
-//TODO: request -> http
 const test = (request, assertions, options) => {
   it(options, () => {
     if (request) {
-      return ass(agent(request), assertions);
+      const res = dsl.request(api, request);
+
+      return assert(res, options.title, assertions);
     }
   });
 };

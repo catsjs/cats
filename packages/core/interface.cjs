@@ -30,8 +30,11 @@ const isChain = (obj) => !!obj && !!obj.ctx && !!obj.end;
 const hasSlow = (options) =>
   !!options &&
   (typeof options.slow === "number" || typeof options.slow === "string");
+const hasTimeout = (options) =>
+  !!options &&
+  (typeof options.timeout === "number" || typeof options.timeout === "string");
 
-const hasContext = (options) => hasSlow(options);
+const hasContext = (options) => hasSlow(options) || hasTimeout(options);
 
 const wrap = (fn, options, isSuite) => {
   if (!fn && !hasContext(options)) {
@@ -42,6 +45,9 @@ const wrap = (fn, options, isSuite) => {
   return function (done) {
     if (hasSlow(options)) {
       this.slow(options.slow);
+    }
+    if (hasTimeout(options)) {
+      this.timeout(options.timeout);
     }
 
     const result = fn.call(this, done);
