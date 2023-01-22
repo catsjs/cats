@@ -21,6 +21,10 @@ const parameters = {
   },
 };
 
+const dsl = {
+  actions: {},
+};
+
 const CONFIG_FILES = [
   //'.catsrc.cjs',
   ".catsrc.js",
@@ -78,83 +82,125 @@ const validatePlugin = (plugin, name, opts) => {
   validateParameters(plugin.parameters, opts, name);
 };
 
+const applyDsl = (plugin, name) => {
+  if (!plugin.dsl) return;
+
+  if (plugin.dsl.actions) {
+    Object.keys(plugin.dsl.actions).forEach((action) => {
+      if (dsl.actions[action]) {
+        throw new Error(
+          `DSL action '${action}' does already exist (provided by ${name}).`
+        );
+      }
+
+      dsl.actions[action] = plugin.dsl.actions[action];
+    });
+  }
+};
+const loadPlugin = async (name) =>
+  await import(name).then((plugin) => plugin.default);
+
+const loadPlugins = async (opts) => {
+  const { plugins, protocol, contentTypes, verbose } = opts;
+
+  /*const resolvedPlugins = await Promise.all(
+    plugins.map(
+      async (plugin) => await import(plugin).then((plugin) => plugin.default)
+    )
+  );*/
+
+  const protocolPlugin = await loadPlugin(protocol);
+  /*const protocolPlugin = resolvedPlugins.find(
+    (plugin) => plugin.type === "protocol" && plugin.name === protocol
+  );*/
+
+  validatePlugin(protocolPlugin, `protocol '${protocol}'`, opts);
+
+  applyDsl(protocolPlugin, `protocol '${protocol}'`);
+
+  if (verbose) {
+    console.log("PROTOCOL", protocolPlugin);
+  }
+
+  const contentPlugins = {};
+
+  for (const contentType of contentTypes) {
+    //await contentTypes.forEach(async (contentType) => {
+    const contentPlugin = await loadPlugin(contentType);
+    /*const contentPlugin = resolvedPlugins.find(
+      (plugin) => plugin.type === "content" && plugin.name === contentType
+    );*/
+
+    validatePlugin(contentPlugin, `content type '${contentType}'`, opts);
+
+    applyDsl(contentPlugin, `content type '${contentType}'`);
+
+    contentPlugins[contentPlugin.name] = contentPlugin.init(opts);
+
+    if (verbose) {
+      console.log("CONTENT", contentPlugin);
+    }
+  }
+
+  return { protocolPlugin, contentPlugins };
+};
+
+const loadOpts = async (rootDir) => {
+  //const rootDir = process.cwd();
+  const pkgPath = resolve(rootDir, "package.json");
+  const rcPath = findUpSync(CONFIG_FILES, { cwd: rootDir });
+  //const rcPath = resolve(rootDir, ".catsrc.js");
+
+  const pkg = await readJSON(pkgPath);
+  //const { default: rc } = await import(rcPath);
+  const rc = await loadConfig(rcPath);
+
+  if (rc.verbose) {
+    console.log("RC", rcPath);
+    console.log(rc);
+  }
+
+  const mocharc = mocha.loadRc();
+
+  if (rc.verbose) {
+    console.log("MOCHARC", mocharc);
+  }
+
+  const opts = {
+    title: pkg.name,
+    description: pkg.description,
+    ...rc,
+    name: pkg.name,
+    version: pkg.version,
+    cache: initCache({ ...rc, rootDir }),
+    resources: initResources({ ...rc, rootDir }),
+    rootDir,
+    mocha: mocharc,
+  };
+
+  if (rc.verbose) {
+    console.log("OPTS", opts);
+  }
+
+  return opts;
+};
+
 let core;
 
 export const init = async (rootDir = process.cwd()) => {
   if (!core) {
-    //const rootDir = process.cwd();
-    const pkgPath = resolve(rootDir, "package.json");
-    const rcPath = findUpSync(CONFIG_FILES, { cwd: rootDir });
-    //const rcPath = resolve(rootDir, ".catsrc.js");
-
-    const pkg = await readJSON(pkgPath);
-    //const { default: rc } = await import(rcPath);
-    const rc = await loadConfig(rcPath);
-
-    if (rc.verbose) {
-      console.log("RC", rcPath);
-      console.log(rc);
-    }
-
-    const mocharc = mocha.loadRc();
-
-    if (rc.verbose) {
-      console.log("MOCHARC", mocharc);
-    }
-
-    const opts = {
-      title: pkg.name,
-      description: pkg.description,
-      ...rc,
-      name: pkg.name,
-      version: pkg.version,
-      cache: initCache({ ...rc, rootDir }),
-      resources: initResources({ ...rc, rootDir }),
-      rootDir,
-      mocha: mocharc,
-    };
-    if (rc.verbose) {
-      console.log("OPTS", opts);
-    }
+    const opts = await loadOpts(rootDir);
 
     validateParameters(parameters, opts, "core");
 
-    const { plugins, protocol, contentTypes } = opts;
-
-    const resolvedPlugins = await Promise.all(
-      plugins.map(
-        async (plugin) => await import(plugin).then((plugin) => plugin.default)
-      )
-    );
-
-    if (rc.verbose) {
-      console.log("PLUGINS", resolvedPlugins);
-    }
-
-    const protocolPlugin = resolvedPlugins.find(
-      (plugin) => plugin.type === "protocol" && plugin.name === protocol
-    );
-
-    validatePlugin(protocolPlugin, `protocol '${protocol}'`, opts);
-
-    const contentPlugins = {};
-
-    contentTypes.forEach((contentType) => {
-      const contentPlugin = resolvedPlugins.find(
-        (plugin) => plugin.type === "content" && plugin.name === contentType
-      );
-
-      validatePlugin(contentPlugin, `content type '${contentType}'`, opts);
-
-      contentPlugins[contentType] = contentPlugin.init(opts);
-    });
+    const { protocolPlugin, contentPlugins } = await loadPlugins(opts);
 
     const shared = {};
 
     const save = (key, value, context = "GLOBAL") => {
       if (!shared[context]) shared[context] = {};
       shared[context][key] = value;
-      if (rc.verbose) {
+      if (opts.verbose) {
         console.log("SAVED", key, context);
       }
     };
@@ -175,11 +221,20 @@ export const init = async (rootDir = process.cwd()) => {
       save(key, [...loadOr(key, []), { title, value }]);
     };
 
+    const content = (type) =>
+      Object.values(contentPlugins).find(
+        (plugin) =>
+          (plugin.mediaTypePattern && plugin.mediaTypePattern.test(type)) ||
+          (plugin.mediaTypes && plugin.mediaTypes.includes(type))
+      );
+
     //TODO: server -> [protocol]
     core = {
       opts,
       api: protocolPlugin.init(opts),
       ...contentPlugins,
+      dsl,
+      content,
       save,
       load,
       loadOr,

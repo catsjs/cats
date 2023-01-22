@@ -4,7 +4,8 @@ import mocha from "mocha/lib/cli/index.js";
 import { init } from "@catsjs/core";
 import util from "util";
 
-const { api, opts, json, html, load, save, setup } = await init();
+const cats = await init();
+const { api, opts, dsl, json, html, load, save, setup } = cats;
 
 export async function mochaGlobalSetup() {
   await loadDsl();
@@ -33,6 +34,12 @@ const agent = (req) => {
   const res = api[req.method.toLowerCase()](req.path);
 
   //TODO: headers, redirects, etc
+
+  if (req.headers) {
+    Object.keys(req.headers).forEach((header) => {
+      res.set(header, req.headers[header]);
+    });
+  }
 
   return res;
 };
@@ -63,38 +70,15 @@ const apply = async (spec) => {
 
       await setup(title, async () => {
         for (let j = 0; j < actions.length; j++) {
-          const { type, ...options } = actions[j];
+          const { type, ...parameters } = actions[j];
 
-          if (type === "crawl") {
-            const { sort, save: saveAs } = options;
-            await html
-              .crawl(api, opts)
-              .then((result) => {
-                if (sort) {
-                  result.links.sort();
-                }
-                console.log(
-                  "LINKS2",
-                  result,
-                  result.links.length,
-                  [...new Set(result.links)].length
-                );
-
-                if (saveAs) {
-                  save(saveAs, result.links);
-                }
-                return "CRAWL LOG";
-              })
-              //ignore errors in setup, requests will be repeated in test
-              .catch((e) => {
-                console.error(e);
-
-                if (saveAs) {
-                  save(saveAs, []);
-                }
-                return e;
-              });
+          if (!dsl.actions[type]) {
+            throw new Error(
+              `DSL action '${action}' does not exist (required by ${title}).`
+            );
           }
+
+          await dsl.actions[type](parameters, cats);
         }
       });
     }
@@ -137,6 +121,7 @@ const suite = (tests, generators, data, options) => {
   });
 };
 
+//TODO: request -> http
 const test = (request, assertions, options) => {
   it(options, () => {
     if (request) {

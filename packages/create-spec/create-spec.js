@@ -72,7 +72,7 @@ export function createSpec(
     plugins: ["@catsjs/http", "@catsjs/json"],
     protocol: "http",
     contentTypes: ["json"],
-    endpoint: "https://swapi.dev/api",
+    api: "https://swapi.dev/api",
     verbose: false,
   };
   fs.writeFileSync(

@@ -13,7 +13,7 @@ const Project = () => {
     version,
     plugins,
     protocol,
-    endpoint,
+    api,
     ...parameters
   } = project;
 
@@ -27,7 +27,7 @@ const Project = () => {
       protocol={protocol}
       parameters={parameters}
       started={stats.start}
-      endpoint={endpoint}
+      endpoint={api}
     />
   ) : null;
 };

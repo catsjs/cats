@@ -1,13 +1,20 @@
 import { types } from "@catsjs/core";
 import http from "./http.js";
+import crawl from "./crawl.js";
+export { default as comparator } from "./comparator.js";
 
 export default {
   type: types.protocol,
   name: "http",
   parameters: {
-    endpoint: {
+    api: {
       required: true,
     },
   },
-  init: (opts) => http(opts.endpoint),
+  dsl: {
+    actions: {
+      crawl,
+    },
+  },
+  init: (opts) => http(opts.api),
 };
