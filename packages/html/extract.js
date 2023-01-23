@@ -30,7 +30,7 @@ export default (
     .forEach((link) => {
       if (
         link.length > 0 &&
-        (!ignoreRegex || !ignoreRegex.test(link)) &&
+        (!ignoreRegex || !new RegExp(ignoreRegex).test(link)) &&
         (!baseUrl || link.startsWith(baseUrl) || !link.startsWith("http"))
       ) {
         const rel = relativize(link, baseUrl);

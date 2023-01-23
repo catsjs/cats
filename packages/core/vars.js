@@ -22,7 +22,9 @@ export default ({ vars, verbose }) => {
   };
 
   const orLoad = (key, vars, context = "GLOBAL") => {
-    return Object.hasOwn(vars, key) ? vars[key] : load(key, context);
+    return typeof vars === "object" && Object.hasOwn(vars, key)
+      ? vars[key]
+      : load(key, context);
   };
 
   return {
