@@ -3,6 +3,7 @@ import fsExtra from "fs-extra";
 import { findUpSync } from "find-up";
 import yaml from "js-yaml";
 import mocha from "mocha/lib/cli/index.js";
+import { merge } from "merge-anything";
 
 const { readJSON } = fsExtra;
 
@@ -45,6 +46,23 @@ const loadRc = async (rcPath) => {
   return config;
 };
 
+const loadEnv = () => {
+  const env = {};
+
+  Object.keys(process.env).forEach((key) => {
+    if (key === "CATS_API") {
+      env.api = process.env[key];
+    } else if (key === "CATS_VERBOSE") {
+      env.verbose = process.env[key] === "true";
+    } else if (key.startsWith("CATS_VARS_")) {
+      if (!env.vars) env.vars = {};
+      env.vars[key.replace("CATS_VARS_", "").toLowerCase()] = process.env[key];
+    }
+  });
+
+  return env;
+};
+
 export const loadOpts = async (rootDir) => {
   //const rootDir = process.cwd();
   const pkgPath = resolve(rootDir, "package.json");
@@ -55,28 +73,29 @@ export const loadOpts = async (rootDir) => {
   //const { default: rc } = await import(rcPath);
   const rc = await loadRc(rcPath);
 
-  if (rc.verbose) {
+  const env = loadEnv();
+
+  const verbose = env.verbose === true || rc.verbose;
+
+  if (verbose) {
     console.log("RC", rcPath);
     console.log(rc);
+    console.log("ENV", env);
   }
 
   const mocharc = mocha.loadRc();
 
-  if (rc.verbose) {
+  if (verbose) {
     console.log("MOCHARC", mocharc);
   }
 
-  const opts = {
-    title: pkg.name,
-    description: pkg.description,
-    ...rc,
-    name: pkg.name,
-    version: pkg.version,
-    rootDir,
-    mocha: mocharc,
-  };
+  const pkg1 = { title: pkg.name, description: pkg.description };
+  const pkg2 = { name: pkg.name, version: pkg.version };
+  const other = { rootDir, mocha: mocharc };
 
-  if (rc.verbose) {
+  const opts = merge(pkg1, rc, env, pkg2, other);
+
+  if (verbose) {
     console.log("OPTS", opts);
   }
 
