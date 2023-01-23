@@ -140,7 +140,7 @@ const crawl = (api, { api: baseUrl }, content) => {
   });
 };
 
-export default async ({ sort, save: saveAs }, { save, api, opts, content }) =>
+export default async ({ sort, save: saveAs }, { api, opts, content, vars }) =>
   crawl(api, opts, content)
     .then((result) => {
       if (sort) {
@@ -154,7 +154,7 @@ export default async ({ sort, save: saveAs }, { save, api, opts, content }) =>
       );
 
       if (saveAs) {
-        save(saveAs, result.links);
+        vars.save(saveAs, result.links);
       }
       return "CRAWL LOG";
     })
@@ -163,7 +163,7 @@ export default async ({ sort, save: saveAs }, { save, api, opts, content }) =>
       console.error(e);
 
       if (saveAs) {
-        save(saveAs, []);
+        vars.save(saveAs, []);
       }
       return e;
     });

@@ -1,19 +1,14 @@
-import { methods } from "./agent.js";
+import { apply, methods } from "./agent.js";
 
-export default (
-  agent,
-  { method = "get", path = "", headers = {}, redirects = 2 }
-) => {
+export default ({ method = "get", path = "", ...options }, agent) => {
   if (!methods.includes(method.toLowerCase())) {
     console.error("ERRRRRRR");
     throw new Error(`HTTP method ${method} does not exist`);
   }
 
-  const res = agent[method.toLowerCase()](path).redirects(redirects);
+  const request = agent[method.toLowerCase()](path);
 
-  Object.keys(headers).forEach((header) => {
-    res.set(header, headers[header]);
-  });
+  apply(request, options);
 
-  return res;
+  return request;
 };

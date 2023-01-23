@@ -1,8 +1,9 @@
 import { types } from "@catsjs/core";
-import agent from "./agent.js";
+import agent, { apply } from "./agent.js";
 import crawl from "./crawl.js";
 import request from "./request.js";
 import { status } from "./assertions.js";
+
 export { default as comparator } from "./comparator.js";
 export { default as crawl } from "./crawl.js";
 
@@ -14,8 +15,15 @@ export default {
       required: true,
     },
   },
+  defaults: {
+    accept: undefined,
+    headers: {},
+    redirects: 2,
+  },
   dsl: {
-    request,
+    creators: {
+      request,
+    },
     actions: {
       crawl,
     },
@@ -23,5 +31,11 @@ export default {
       status,
     },
   },
-  init: (opts) => agent(opts.api),
+  init: (parameters, defaults) => {
+    const api = agent(parameters.api);
+
+    apply(api, defaults);
+
+    return api;
+  },
 };

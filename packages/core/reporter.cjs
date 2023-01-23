@@ -6,6 +6,10 @@ const marge = require("./marge.cjs");
 const packageJson = require("./package.json");
 
 function copyOptions(source, target) {
+  if (!target) {
+    return;
+  }
+
   target.options = source.options || {};
 
   if (target.tests) {
@@ -83,33 +87,37 @@ function CatsReporter(runner, options) {
   Base.maxDiffSize = 16384;
 
   this.done = (failures, exit) => {
-    for (let i = 0; i < this.runner.suite.suites.length; i++) {
-      copyOptions(
-        this.runner.suite.suites[i],
-        this.output.results[0].suites[i]
-      );
-    }
-    for (let i = 0; i < this.runner.suite._beforeAll.length; i++) {
-      copyOptions(
-        this.runner.suite._beforeAll[i],
-        this.output.results[0].beforeHooks[i]
-      );
-    }
-    for (let i = 0; i < this.runner.suite._afterAll.length; i++) {
-      copyOptions(
-        this.runner.suite._afterAll[i],
-        this.output.results[0].afterHooks[i]
-      );
-    }
+    try {
+      for (let i = 0; i < this.runner.suite.suites.length; i++) {
+        copyOptions(
+          this.runner.suite.suites[i],
+          this.output.results[0].suites[i]
+        );
+      }
+      for (let i = 0; i < this.runner.suite._beforeAll.length; i++) {
+        copyOptions(
+          this.runner.suite._beforeAll[i],
+          this.output.results[0].beforeHooks[i]
+        );
+      }
+      for (let i = 0; i < this.runner.suite._afterAll.length; i++) {
+        copyOptions(
+          this.runner.suite._afterAll[i],
+          this.output.results[0].afterHooks[i]
+        );
+      }
 
-    this.output.project = this.runner.suite.project;
+      this.output.project = this.runner.suite.project;
 
-    this.output.meta.cats = {
-      name: "cats",
-      version: packageJson.version,
-      link: packageJson.repository,
-      options: {},
-    };
+      this.output.meta.cats = {
+        name: "cats",
+        version: packageJson.version,
+        link: packageJson.repository,
+        options: {},
+      };
+    } catch (e) {
+      console.error("Error preparing report:", e);
+    }
 
     return done(
       this.output,
