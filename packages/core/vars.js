@@ -1,4 +1,6 @@
-export default ({ vars, verbose }) => {
+import { merge as doMerge } from "merge-anything";
+
+const store = ({ vars, verbose }) => {
   const shared = { GLOBAL: vars || {} };
   console.log("SHARED", shared);
 
@@ -27,10 +29,17 @@ export default ({ vars, verbose }) => {
       : load(key, context);
   };
 
+  const merge = (vars, context = "GLOBAL") => {
+    return store({ vars: doMerge(shared[context] || {}, vars) });
+  };
+
   return {
     save,
     load,
     loadOr,
     orLoad,
+    merge,
   };
 };
+
+export default store;

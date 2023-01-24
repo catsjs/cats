@@ -108,14 +108,22 @@ const suite = ({ title, timeout, slow, vars, tests, ...parameterDefaults }) => {
             foreach,
             vars,
             type,
-            { ...parameterDefaults, ...parameters },
+            {
+              ...parameterDefaults,
+              ...parameters,
+              vars: cats.vars.merge(vars),
+            },
             assertions,
             options
           );
         } else {
           test(
             type,
-            { ...parameterDefaults, ...parameters },
+            {
+              ...parameterDefaults,
+              ...parameters,
+              vars: cats.vars.merge(vars),
+            },
             assertions,
             options
           );
