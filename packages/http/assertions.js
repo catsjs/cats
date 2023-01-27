@@ -25,7 +25,7 @@ export const equals = ({ reverse, ignore = {}, equalize = {} }, test) => {
 };
 
 //TODO: per content type
-const diff = (source, target, equalize) => {
+export const diff = (source, target, equalize) => {
   const html1 = cheerio.load(source);
   let html2 = cheerio.load(target).html();
 

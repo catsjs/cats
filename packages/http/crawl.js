@@ -127,7 +127,7 @@ const crawl = (api, parameters, { api: baseUrl }, content) => {
 };
 
 export default async (
-  { sort, save: saveAs, ...parameters },
+  { sort, save: saveAs, callback, ...parameters },
   { api, opts, content, vars }
 ) =>
   crawl(api, parameters, opts, content)
@@ -144,6 +144,14 @@ export default async (
 
       if (saveAs) {
         vars.save(saveAs, result.links);
+      }
+
+      if (callback) {
+        try {
+          callback(result);
+        } catch (e) {
+          //TODO
+        }
       }
       return "CRAWL LOG";
     })

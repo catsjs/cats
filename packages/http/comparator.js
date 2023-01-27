@@ -8,16 +8,24 @@ export const compare = ({ to, vars, ...options }, agent) => {
   return request(options, compareAgent);
 };
 
+export const compareTo = (api, url, parameters) => {
+  const asserts = parameters.callback ? [parameters.callback] : [];
+  const compareAgent = comparator(api, url, asserts);
+
+  return request(parameters, compareAgent);
+};
+
 //TODO: validate input parameters
 //TODO: allow switched parameters
-export const comparator = (api1, url) => {
+export const comparator = (api1, url, asserts = []) => {
+  console.log("ASSERTS " + asserts.length);
   if (!url || typeof url !== "string" || !url.startsWith("http")) {
     //TODO: validate with new URL ?
     throw new Error("diff - invalid url provided as second parameter: " + url);
   }
 
   const api2 = agent(url);
-  const asserts = [];
+  //const asserts = [];
 
   let current1 = api1;
   let current2 = api2;
@@ -44,6 +52,7 @@ export const comparator = (api1, url) => {
 
       try {
         for (let j = 0; j < asserts.length; j++) {
+          console.log("ASS" + j);
           asserts[j](results[0].value, results[1].value);
         }
       } catch (e) {

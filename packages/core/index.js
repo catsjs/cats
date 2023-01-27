@@ -50,6 +50,8 @@ export const init = async (rootDir = process.cwd()) => {
       cache: initCache({ rootDir }),
       resources: initResources({ rootDir }),
     };
+
+    protocolPlugin.core = core;
   }
 
   return core;
