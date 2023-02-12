@@ -1,31 +1,28 @@
-import agent, { methods } from "./agent.js";
+import agent, { methods, apply } from "./agent.js";
 import request from "./request.js";
 
 //TODO: apply defaults to new agent
-export const compare = ({ to, vars, ...options }, agent) => {
-  const compareAgent = comparator(agent, vars.load(to));
+export const compare = ({ api2, ...options }, api1) => {
+  const compareAgent = comparator(api1, api2);
 
   return request(options, compareAgent);
 };
 
-export const compareTo = (api, url, parameters) => {
+export const compareTo = (api, api2, parameters) => {
   const asserts = parameters.callback ? [parameters.callback] : [];
-  const compareAgent = comparator(api, url, asserts);
+  const compareAgent = comparator(api, api2, asserts);
 
   return request(parameters, compareAgent);
 };
 
 //TODO: validate input parameters
 //TODO: allow switched parameters
-export const comparator = (api1, url, asserts = []) => {
+export const comparator = (api1, api2, asserts = []) => {
   console.log("ASSERTS " + asserts.length);
-  if (!url || typeof url !== "string" || !url.startsWith("http")) {
+  /*if (!url || typeof url !== "string" || !url.startsWith("http")) {
     //TODO: validate with new URL ?
     throw new Error("diff - invalid url provided as second parameter: " + url);
-  }
-
-  const api2 = agent(url);
-  //const asserts = [];
+  }*/
 
   let current1 = api1;
   let current2 = api2;

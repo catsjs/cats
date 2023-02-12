@@ -30,7 +30,7 @@ const store = ({ vars, verbose }) => {
   };
 
   const merge = (vars, context = "GLOBAL") => {
-    return store({ vars: doMerge(shared[context] || {}, vars) });
+    return store({ vars: doMerge(shared[context] || {}, vars || {}) });
   };
 
   return {
