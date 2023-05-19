@@ -2,7 +2,9 @@ import { merge as doMerge } from "merge-anything";
 
 const store = ({ vars, verbose }) => {
   const shared = { GLOBAL: vars || {} };
-  console.log("SHARED", shared);
+  if (verbose) {
+    console.log("SHARED", shared);
+  }
 
   const save = (key, value, context = "GLOBAL") => {
     if (!shared[context]) shared[context] = {};

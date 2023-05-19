@@ -134,7 +134,6 @@ const suite = ({ title, timeout, slow, vars, tests, ...parameterDefaults }) => {
 };
 
 const test = (type = "request", parameters, assertions, options) => {
-  console.log("PARAMS", parameters);
   it(options, () => {
     const res = execute(
       "creators",

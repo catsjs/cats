@@ -57,7 +57,7 @@ export function createSpec(
   const mochaOpts = {
     ui: "@catsjs/core/interface",
     reporter: "@catsjs/core/reporter",
-    require: "@catsjs/core/hooks",
+    require: ["@catsjs/core/dsl", "@catsjs/core/hooks"],
     spec: "spec",
     recursive: true,
     timeout: "60s",
@@ -69,10 +69,9 @@ export function createSpec(
   );
 
   const catsrc = {
-    plugins: ["@catsjs/http", "@catsjs/json"],
-    protocol: "http",
-    contentTypes: ["json"],
     api: "https://swapi.dev/api",
+    protocol: { plugin: "@catsjs/http" },
+    contentTypes: ["@catsjs/json"],
     verbose: false,
   };
   fs.writeFileSync(
