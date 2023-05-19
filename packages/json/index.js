@@ -3,7 +3,16 @@ import matchPattern from "lodash-match-pattern";
 import { types } from "@catsjs/core";
 import patternAssertions from "./pattern.js";
 import schemaAssertions from "./schema.js";
+import extractLinks from "./extract.js";
 import util from "util";
+
+const plugin = {
+  type: types.content,
+  name: "json",
+  parameters: {},
+  mediaTypes: ["application/json"],
+  mediaTypePattern: undefined,
+};
 
 const init = (opts) => {
   chai.use(function (_chai, utils) {
@@ -31,8 +40,10 @@ const init = (opts) => {
   });
 
   return {
+    ...plugin,
     ...matchPattern.getLodashModule(), // is* functions
     of: (content) => chai.expect(content),
+    extractLinks,
   };
 };
 
@@ -49,8 +60,6 @@ const cleanupError = (error) => {
 };
 
 export default {
-  type: types.content,
-  name: "json",
-  parameters: {},
+  ...plugin,
   init: init,
 };
