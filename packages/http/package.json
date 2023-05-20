@@ -1,6 +1,6 @@
 {
   "name": "@catsjs/http",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "license": "MIT",
   "repository": "https://github.com/catsjs/cats",
   "author": "Andreas Zahnen",
@@ -10,9 +10,10 @@
       "import": "./index.js"
     }
   },
-  "scripts": {},
+  "peerDependencies": {
+    "@catsjs/core": "workspace:^"
+  },
   "dependencies": {
-    "@catsjs/core": "1.0.0-beta.3",
     "cheerio": "^1.0.0-rc.12",
     "supertest": "^6.3.3"
   }

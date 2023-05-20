@@ -80,3 +80,6 @@ dev/
 packages/editor/report/
 
 **/.DS_Store
+
+.yarn/cache
+.yarn/install-state.gz

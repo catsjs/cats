@@ -5,9 +5,7 @@
   "repository": "https://github.com/catsjs/cats",
   "author": "Andreas Zahnen",
   "type": "module",
-  "bin": {
-    "create-spec": "./index.js"
-  },
+  "bin": "./index.js",
   "dependencies": {
     "chalk": "^5.2.0",
     "commander": "^10.0.0",

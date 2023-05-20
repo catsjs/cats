@@ -13,8 +13,10 @@
   "scripts": {
     "test": "mocha"
   },
+  "peerDependencies": {
+    "@catsjs/core": "workspace:^"
+  },
   "dependencies": {
-    "@catsjs/core": "1.0.0-beta.3",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
     "chai-json-schema-ajv": "^5.2.4",

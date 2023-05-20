@@ -10,11 +10,11 @@
       "import": "./index.js"
     }
   },
-  "scripts": {},
+  "peerDependencies": {
+    "@catsjs/core": "workspace:^"
+  },
   "dependencies": {
-    "@catsjs/core": "1.0.0-beta.3",
     "chai-cheerio": "^1.0.0",
     "cheerio": "^1.0.0-rc.12"
-  },
-  "devDependencies": {}
+  }
 }

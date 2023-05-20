@@ -24,9 +24,7 @@ Test.prototype.assert = function (resError, res, fn) {
   if (this.context && res) {
     //TODO
     const showBody = true;
-    if (opts.verbose) {
-      console.log("REQUEST", res.request.url, this.compareIndex);
-    }
+    //console.log("REQUEST", res.request.url, this.compareIndex);
     let request = res.request.method + " " + res.request.url + " HTTP/1.1\n";
     for (const key of Object.keys(res.request.header)) {
       request += key + ": " + res.request.header[key] + "\n";
