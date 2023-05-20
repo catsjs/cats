@@ -41,6 +41,9 @@ export function createSpec(
     },
     dependencies: {
       "@catsjs/core": "^" + version,
+      "@catsjs/http": "^" + version,
+      "@catsjs/json": "^" + version,
+      "@catsjs/report": "^" + version,
       mocha: "^10.2.0",
     },
   };

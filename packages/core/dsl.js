@@ -102,7 +102,9 @@ const suite = ({ title, timeout, slow, vars, tests, ...parameterDefaults }) => {
           slow,
           yml: yaml.dump(tests[i], { indent: 2, noArrayIndent: true }),
         };
-        console.log("IN", parameterDefaults, parameters);
+        if (opts.verbose) {
+          console.log("IN", parameterDefaults, parameters);
+        }
         if (foreach) {
           generator(
             foreach,
@@ -156,8 +158,9 @@ const generator = (
   options
 ) => {
   const values = vars.orLoad(foreach, suiteVars);
-  console.log("VAR", foreach, values);
-
+  if (opts.verbose) {
+    console.log("VAR", foreach, values);
+  }
   if (!values || !Array.isArray(values)) {
     console.error("foreach: " + foreach + " not found");
     return;
