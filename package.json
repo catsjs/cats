@@ -1,11 +1,20 @@
 {
-    "name": "cats",
-    "private": true,
-    "scripts": {
-    },
-    "devDependencies": {
-    },
-    "workspaces": [
-        "packages/*"
-    ]
+  "name": "cats",
+  "private": true,
+  "repository": "https://github.com/catsjs/cats.git",
+  "scripts": {
+    "change": "beachball change",
+    "checkchange": "beachball check",
+    "release": "beachball publish",
+    "docsDev": "vuepress dev docs",
+    "docsBuild": "vuepress build docs"
+  },
+  "devDependencies": {
+    "beachball": "^2.33.2",
+    "vuepress": "^1.5.3"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "yarn@3.5.1"
 }

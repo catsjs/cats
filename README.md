@@ -1,6 +1,6 @@
 # cats
 
-Continuous API Testing Stack or Specifications
+Continuous API Testing Stack
 
 ## packages
 
