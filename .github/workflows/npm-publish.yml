@@ -19,6 +19,11 @@ jobs:
       - run: yarn install --immutable
       - run: yarn test
       - run: yarn build
-      - run: yarn npm publish --access public --tag $NPM_TAG
+      - run: yarn workspace @catsjs/core npm publish --access public --tag $NPM_TAG
+      - run: yarn workspace @catsjs/create-spec npm publish --access public --tag $NPM_TAG
+      - run: yarn workspace @catsjs/html npm publish --access public --tag $NPM_TAG
+      - run: yarn workspace @catsjs/http npm publish --access public --tag $NPM_TAG
+      - run: yarn workspace @catsjs/json npm publish --access public --tag $NPM_TAG
+      - run: yarn workspace @catsjs/report npm publish --access public --tag $NPM_TAG
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
