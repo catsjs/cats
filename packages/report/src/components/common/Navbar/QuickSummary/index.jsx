@@ -49,16 +49,12 @@ const QuickSummary = ({ stats }) => {
         )}
       </Box>
       <Box display="flex" mb={[1, 0]}>
-        {passes && (
-          <Item title="Passed">
-            <IconStatus status="passed" count={passes} light />
-          </Item>
-        )}
-        {failures && (
-          <Item title="Failed">
-            <IconStatus status="failed" count={failures} light />
-          </Item>
-        )}
+        <Item title="Passed">
+          <IconStatus status="passed" count={passes || 0} light />
+        </Item>
+        <Item title="Failed">
+          <IconStatus status="failed" count={failures || 0} light />
+        </Item>
         {!!pending && (
           <Item title="Pending">
             <IconStatus status="pending" count={pending} light />

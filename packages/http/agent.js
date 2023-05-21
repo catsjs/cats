@@ -42,13 +42,13 @@ Test.prototype.assert = function (resError, res, fn) {
       title: "Request",
       value: request,
       language: "http",
-      index: this.compareIndex,
+      index: this.compareIndex || 0,
     });
     saveContext(this.context, {
       title: "Response",
       value: response,
       language: "http",
-      index: this.compareIndex,
+      index: this.compareIndex || 0,
     });
   }
 
@@ -61,7 +61,7 @@ const saveContext = (ctx, val) => {
       (entry) => entry.title === val.title
     );
 
-    if (elem > -1) {
+    if (elem > -1 && ctx.test.context[elem].index !== val.index) {
       ctx.test.context[elem].title += ` ${ctx.test.context[elem].index}`;
       val.title += ` ${val.index}`;
       const offset = val.index > ctx.test.context[elem].index ? 1 : 0;
