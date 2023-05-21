@@ -1,11 +1,16 @@
 {
   "name": "cats",
+  "version": "1.0.0-beta.5",
+  "license": "MIT",
+  "author": "Andreas Zahnen",
   "private": true,
   "repository": "https://github.com/catsjs/cats.git",
   "scripts": {
-    "change": "beachball change",
-    "checkchange": "beachball check",
-    "release": "beachball publish",
+    "build": "yarn workspace @catsjs/report build",
+    "test": "echo 'TODO'",
+    "change": "beachball change --verbose",
+    "checkchange": "beachball check --verbose",
+    "bump": "beachball bump",
     "docsDev": "vuepress dev docs",
     "docsBuild": "vuepress build docs"
   },
@@ -14,6 +19,7 @@
     "vuepress": "^1.5.3"
   },
   "workspaces": [
+    ".",
     "packages/*"
   ],
   "packageManager": "yarn@3.5.1"

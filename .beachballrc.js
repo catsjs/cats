@@ -7,13 +7,18 @@ module.exports = {
   groups: [
     {
       name: "cats",
-      include: ["packages/*"]
+      include: ["", "packages/*"]
     }
   ],
-  transform: {
-    changeFiles: (changeInfo) => {
-      delete changeInfo.email;
-      return changeInfo;
+  changelog: {
+    groups: [{
+      masterPackageName: "cats",
+      changelogPath: ".",
+      include: [".", "packages/*"]
+    }],
+    customRenderers: {
+      //renderChangeTypeHeader:,
+      renderEntry: (entry) => `- ${entry.comment}`,
     }
-  }
+  },
 }
