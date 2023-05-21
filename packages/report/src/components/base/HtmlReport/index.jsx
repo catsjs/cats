@@ -16,7 +16,11 @@ import { apispec as theme } from "../../../themes";
 
 const DefaultTest = (props) => <Test {...props} />;
 const DefaultSuite = (props) => (
-  <Suite {...props} Test={DefaultTest} Actions={() => <div>actions</div>} />
+  <Suite
+    {...props}
+    Test={DefaultTest}
+    Actions={undefined /*() => <div>actions</div>*/}
+  />
 );
 const DefaultSuites = (props) => <Suites {...props} Suite={DefaultSuite} />;
 

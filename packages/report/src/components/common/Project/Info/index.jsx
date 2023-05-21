@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { Typography, Divider } from "@material-ui/core";
+import Markdown from "../../Markdown";
 
 const ProjectInfo = ({
   name,
@@ -44,15 +45,15 @@ const ProjectInfo = ({
         )}
         </Typography>*/}
       <Typography variant="body" align="center" color="textSecondary" paragraph>
-        {description}
+        <Markdown>{description}</Markdown>
       </Typography>
       <Divider variant="middle" />
-      <Typography variant="body" align="center" color="textSecondary" paragraph>
+      {/*<Typography variant="body" align="center" color="textSecondary" paragraph>
         {endpoint}
       </Typography>
       <Typography variant="body" align="center" color="textSecondary" paragraph>
         {started}
-      </Typography>
+      </Typography>*/}
     </>
   );
 };

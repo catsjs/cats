@@ -148,36 +148,44 @@ const Suite = ({
 
   return isMain ? (
     <Card id={uuid} raised={isMain} square>
-      <CardContent>
+      <Expandable id={uuid} expanded={expanded}>
+        <Summary
+          title={title}
+          description={description}
+          duration={duration}
+          passed={hasPasses && !hasFailures}
+          failed={hasFailures}
+          pended={hasPending || (hasSkipped && !hasPasses && !hasFailures)}
+          passes={totalPasses}
+          failures={totalFailures}
+          pending={totalPending}
+          skipped={totalSkipped}
+          isExpanded={expanded}
+          Actions={Actions}
+          hasContext
+          bigger
+        />
         <Box>
-          <TitleComponent title={title} />
-          <DescriptionComponent description={description} />
+          {/*Actions && (
+            <Box p={2}>
+              <Actions {...suite} path={path} />
+            </Box>
+          )*/}
+          {(hasTests || hasBeforeHooks || hasAfterHooks) && (
+            <Tests
+              uuid={uuid}
+              tests={tests}
+              beforeHooks={beforeHooks}
+              afterHooks={afterHooks}
+              enableCode={enableCode}
+              path={path}
+              file={file}
+              Test={Test}
+            />
+          )}
+          {subSuites()}
         </Box>
-        {hasTests && enableChart && <Chart {...chartProps} />}
-        {!hasTests && !Actions && <ExpandButton onClick={toggleExpanded} />}
-      </CardContent>
-      {(Actions || hasTests) && (
-        <CardActions>
-          {Actions && <Actions {...suite} path={path} />}
-          {hasTests && <div /> /* <SuiteSummaryMui {...summaryProps} /> */}
-          <ExpandButton onClick={toggleExpanded} />
-        </CardActions>
-      )}
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {(hasTests || hasBeforeHooks || hasAfterHooks) && (
-          <Tests
-            uuid={uuid}
-            tests={tests}
-            beforeHooks={beforeHooks}
-            afterHooks={afterHooks}
-            enableCode={enableCode}
-            path={path}
-            file={file}
-            Test={Test}
-          />
-        )}
-        {subSuites()}
-      </Collapse>
+      </Expandable>
     </Card>
   ) : (
     <Expandable id={uuid} nested>
@@ -197,7 +205,11 @@ const Suite = ({
         bigger
       />
       <Box>
-        {Actions && <Actions {...suite} path={path} />}
+        {/*Actions && (
+            <Box p={2}>
+              <Actions {...suite} path={path} />
+            </Box>
+          )*/}
         {(hasTests || hasBeforeHooks || hasAfterHooks) && (
           <Tests
             uuid={uuid}

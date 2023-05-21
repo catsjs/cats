@@ -13,7 +13,7 @@ const Footer = ({ name, link, version }) => {
   return (
     <FooterWrapper>
       <Typography variant="body2" color="textSecondary" align="center">
-        powered by&nbsp;&nbsp;
+        powered by&nbsp;
         <Link color="primary" variant="body1" href={link} target="_blank">
           {name}
         </Link>
