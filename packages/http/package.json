@@ -2,8 +2,12 @@
   "name": "@catsjs/http",
   "version": "1.0.0-beta.4",
   "license": "MIT",
-  "repository": "https://github.com/catsjs/cats",
   "author": "Andreas Zahnen",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/catsjs/cats.git",
+    "directory": "packages/http"
+  },
   "type": "module",
   "exports": {
     ".": {
