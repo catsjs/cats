@@ -1,6 +1,7 @@
 import yaml from "js-yaml";
 import fsExtra from "fs-extra";
 import mocha from "mocha/lib/cli/index.js";
+import { get, set, keys, isArray, isObject } from "radash";
 import { init } from "@catsjs/core";
 
 const cats = await init();
@@ -40,19 +41,37 @@ const assert = (req, title, assertions = []) => {
   return res;
 };
 
+const initDsl = (category, { type, ...parameters }, options, requiredBy) => {
+  const typ =
+    !type && Object.keys(parameters).length === 1
+      ? Object.keys(parameters)[0]
+      : type;
+
+  const initializer = dsl[category][typ] && dsl[category][typ].init;
+
+  if (!initializer) {
+    return options;
+  }
+
+  return initializer(options, parameters);
+};
+
 const execute = (category, { type, ...parameters }, obj, requiredBy) => {
   const typ =
     !type && Object.keys(parameters).length === 1
       ? Object.keys(parameters)[0]
       : type;
 
-  if (!dsl[category][typ]) {
+  const executor =
+    dsl[category][typ] && (dsl[category][typ].execute || dsl[category][typ]);
+
+  if (!executor) {
     throw new Error(
       `DSL ${category} '${typ}' does not exist (required by '${requiredBy}').`
     );
   }
 
-  return dsl[category][typ](parameters, obj);
+  return executor(parameters, obj, cats);
 };
 
 const apply = async (spec) => {
@@ -83,8 +102,16 @@ const apply = async (spec) => {
   }
 };
 
-const suite = ({ title, timeout, slow, vars, tests, ...parameterDefaults }) => {
-  describe({ title, timeout, slow }, () => {
+const suite = ({
+  title,
+  description,
+  timeout,
+  slow,
+  vars,
+  tests,
+  ...parameterDefaults
+}) => {
+  describe({ title, description, timeout, slow }, () => {
     if (Array.isArray(tests)) {
       for (let i = 0; i < tests.length; i++) {
         const {
@@ -136,19 +163,20 @@ const suite = ({ title, timeout, slow, vars, tests, ...parameterDefaults }) => {
 };
 
 const test = (type = "request", parameters, assertions, options) => {
-  it(options, () => {
+  const options2 = initDsl("creators", { type, ...parameters }, options);
+
+  it(options2, () => {
     const res = execute(
       "creators",
       { type, ...parameters },
       api,
-      options.title
+      options2.title
     );
 
-    return assert(res, options.title, assertions);
+    return assert(res, options2.title, assertions);
   });
 };
 
-//TODO: load shared
 const generator = (
   foreach,
   suiteVars,
@@ -169,26 +197,69 @@ const generator = (
   for (let i = 0; i < values.length; i++) {
     const current = values[i];
 
-    //TODO: subst all params/options
+    //TODO: subst yml
     test(
       type,
-      {
-        ...parameters,
-        path: parameters.path ? subst(parameters.path, current) : undefined,
-      },
-      assertions,
-      {
-        ...options,
-        title: options.title ? subst(options.title, current) : undefined,
-        description: options.description
-          ? subst(options.description, current)
-          : undefined,
-      }
+      substituteDeep(parameters, current, ["vars"]),
+      substituteDeep(assertions, current),
+      substituteDeep(options, current, ["yml"])
     );
   }
 };
 
-//TODO: matcher, objects
-const subst = (str, val) => {
-  return str.replaceAll(/\$\{\.\}/g, val);
+const exact = /^\$\{([\.A-Za-z]+)\}$/;
+const any = /\$\{([\.A-Za-z]+)\}/g;
+
+const substituteDeep = (src, subst, ignore = []) => {
+  if (!isArray(src) && !isObject(src)) {
+    return src;
+  }
+
+  if (isArray(src)) {
+    return src.map((item) => substituteDeep(item, subst, ignore));
+  }
+
+  let result = src;
+
+  for (const key of keys(src)) {
+    if (ignore.find((ign) => key.startsWith(ign))) {
+      continue;
+    }
+
+    const val = get(src, key);
+    const next = substitute(val, subst);
+    //console.log(key, val, next);
+
+    if (val !== next) {
+      result = set(result, key, next);
+    }
+  }
+  return result;
+};
+
+const substitute = (src, subst) => {
+  if (exact.test(src)) {
+    return substituteRef(src, subst);
+  }
+  if (any.test(src)) {
+    return substituteStr(src, subst);
+  }
+
+  return src;
+};
+
+const substituteStr = (str, subst) => {
+  return str.replaceAll(any, (match, ref) => {
+    return ref === "." ? subst : get(subst, ref);
+  });
+};
+
+const substituteRef = (ref, subst) => {
+  const found = exact.exec(ref);
+
+  if (found) {
+    return ref === "." ? subst : get(subst, found[1]);
+  }
+
+  return ref;
 };

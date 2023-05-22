@@ -1,8 +1,10 @@
 import { merge } from "merge-anything";
+import path from "path";
 
 export const types = {
   protocol: "protocol",
   content: "content",
+  dsl: "dsl",
 };
 
 export const validateParameters = (schema, opts, requiredBy) => {
@@ -66,7 +68,14 @@ const loadPlugin = async (parameters, label, dsl, opts) => {
   const module =
     typeof parameters === "string" ? parameters : parameters.plugin;
 
-  const plugin = await import(module).then((m) => m.default);
+  const plugin = await import(module)
+    .then((m) => m.default)
+    .catch(async (e) => {
+      const ext = path.extname(module) === "" ? ".js" : "";
+      return await import(path.resolve(opts.rootDir, module + ext))
+        .then((m) => m.default)
+        .catch(() => {});
+    });
 
   validatePlugin(plugin, label, opts);
 
@@ -79,11 +88,11 @@ const loadPlugin = async (parameters, label, dsl, opts) => {
     console.log("PLUGIN", plugin);
   }
 
-  return plugin.init(initParams, defaults);
+  return plugin.init ? plugin.init(initParams, defaults) : plugin;
 };
 
 export const loadPlugins = async (opts) => {
-  const { protocol, contentTypes } = opts;
+  const { protocol, contentTypes, dslPlugins = [] } = opts;
 
   const dsl = {
     creators: {},
@@ -109,6 +118,10 @@ export const loadPlugins = async (opts) => {
     );
 
     contentPlugins[contentPlugin.name] = contentPlugin;
+  }
+
+  for (const dslPlugin of dslPlugins) {
+    await loadPlugin(dslPlugin, `dsl plugin '${dslPlugin}'`, dsl, opts);
   }
 
   return { dsl, protocolPlugin, contentPlugins };

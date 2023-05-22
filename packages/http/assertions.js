@@ -16,6 +16,9 @@ chai.use(function (_chai, utils) {
 
 export const status = ({ status }, test) => test.expect(status);
 
+export const content = ({ content }, test) =>
+  test.expect("Content-Type", content);
+
 export const equals = ({ reverse, ignore = {}, equalize = {} }, test) => {
   test.addComparison((res1, res2) => {
     diff(res1.text, res2.text, equalize);

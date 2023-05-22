@@ -2,11 +2,12 @@ import { types } from "@catsjs/core";
 import agent, { apply } from "./agent.js";
 import crawl from "./crawl.js";
 import request from "./request.js";
-import { status, equals } from "./assertions.js";
+import { status, content, equals } from "./assertions.js";
 import { compare, compareTo } from "./comparator.js";
 
 export { comparator } from "./comparator.js";
 export { default as crawl } from "./crawl.js";
+export { default as request } from "./request.js";
 
 let d = {};
 
@@ -38,6 +39,7 @@ export default {
     },
     assertions: {
       status,
+      content,
       equals,
     },
   },

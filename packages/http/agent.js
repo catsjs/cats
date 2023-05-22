@@ -76,7 +76,7 @@ const saveContext = (ctx, val) => {
 
 export default agent;
 
-export const apply = (agent, { accept, headers, redirects }) => {
+export const apply = (agent, { accept, headers, query, redirects }) => {
   if (typeof accept === "string") {
     agent.accept(accept);
   }
@@ -85,6 +85,10 @@ export const apply = (agent, { accept, headers, redirects }) => {
     Object.keys(headers).forEach((header) => {
       agent.set(header, headers[header]);
     });
+  }
+
+  if (typeof query === "object" || typeof query === "string") {
+    agent.query(query);
   }
 
   if (typeof redirects === "number") {

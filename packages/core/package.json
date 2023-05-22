@@ -36,6 +36,7 @@
     "js-yaml": "^4.1.0",
     "merge-anything": "^5.1.4",
     "mocha": "^10.2.0",
-    "mochawesome": "^7.1.3"
+    "mochawesome": "^7.1.3",
+    "radash": "^10.8.1"
   }
 }

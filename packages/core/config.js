@@ -7,6 +7,7 @@ import { merge } from "merge-anything";
 
 const { readJSON } = fsExtra;
 
+//TODO: use https://github.com/cosmiconfig/cosmiconfig ???
 const CONFIG_FILES = [
   //'.catsrc.cjs',
   ".catsrc.js",
