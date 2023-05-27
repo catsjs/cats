@@ -72,6 +72,7 @@ const loadPlugin = async (parameters, label, dsl, opts) => {
     .then((m) => m.default)
     .catch(async (e) => {
       const ext = path.extname(module) === "" ? ".js" : "";
+      //TODO: prepend with file:/ on windows
       return await import(path.resolve(opts.rootDir, module + ext))
         .then((m) => m.default)
         .catch(() => {});

@@ -22,5 +22,8 @@
     ".",
     "packages/*"
   ],
-  "packageManager": "yarn@3.5.1"
+  "packageManager": "yarn@3.5.1",
+  "resolutions": {
+    "beachball@^2.33.2": "patch:beachball@npm%3A2.33.2#./.yarn/patches/beachball-npm-2.33.2-2c2b6a1176.patch"
+  }
 }

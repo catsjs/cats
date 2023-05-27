@@ -1,0 +1,65 @@
+diff --git a/lib/bump/bumpPackageInfoVersion.js b/lib/bump/bumpPackageInfoVersion.js
+index ae996df768b5599643f52c55234fe6b3a4785334..8e3d94f15b1a23d81e9c20f890a74097cdc4ffb4 100644
+--- a/lib/bump/bumpPackageInfoVersion.js
++++ b/lib/bump/bumpPackageInfoVersion.js
+@@ -18,9 +18,9 @@ function bumpPackageInfoVersion(pkgName, bumpInfo, options) {
+     else if (changeType === 'none') {
+         console.log(`"${pkgName}" has a "none" change type, no version bump is required.`);
+     }
+-    else if (info.private) {
+-        console.log(`Skipping bumping private package "${pkgName}"`);
+-    }
++//    else if (info.private) {
++//        console.log(`Skipping bumping private package "${pkgName}"`);
++//    }
+     else {
+         // Version should be updated
+         info.version = semver_1.default.inc(info.version, options.prereleasePrefix ? 'prerelease' : changeType, options.prereleasePrefix || undefined);
+diff --git a/lib/bump/performBump.js b/lib/bump/performBump.js
+index 78ab415feeb329cf862aa869907f86fbbf77b660..29c23523771f5e9c723fffa8f86245ec41b70f70 100644
+--- a/lib/bump/performBump.js
++++ b/lib/bump/performBump.js
+@@ -18,9 +18,9 @@ function writePackageJson(modifiedPackages, packageInfos) {
+             continue;
+         }
+         const packageJson = fs_extra_1.default.readJSONSync(info.packageJsonPath);
+-        if (!info.private) {
++//        if (!info.private) {
+             packageJson.version = info.version;
+-        }
++//        }
+         for (const depKind of ['dependencies', 'devDependencies', 'peerDependencies']) {
+             // updatedDeps contains all of the dependencies in the bump info since the beginning of a build job
+             const updatedDepsVersions = info[depKind];
+diff --git a/lib/changelog/writeChangelog.js b/lib/changelog/writeChangelog.js
+index d9b8c25fec90971f2b93cb7090dbb8e1cca711a7..9395b6078f01a6d53a25c1138a57f712b5a89da6 100644
+--- a/lib/changelog/writeChangelog.js
++++ b/lib/changelog/writeChangelog.js
+@@ -13,6 +13,7 @@ const isPathIncluded_1 = require("../monorepo/isPathIncluded");
+ const mergeChangelogs_1 = require("./mergeChangelogs");
+ async function writeChangelog(options, changeFileChangeInfos, calculatedChangeTypes, dependentChangedBy, packageInfos) {
+     const groupedChangelogPaths = await writeGroupedChangelog(options, changeFileChangeInfos, calculatedChangeTypes, packageInfos);
++return;
+     const groupedChangelogPathSet = new Set(groupedChangelogPaths);
+     const changelogs = getPackageChangelogs_1.getPackageChangelogs(changeFileChangeInfos, calculatedChangeTypes, dependentChangedBy, packageInfos, options.path);
+     // Use a standard for loop here to prevent potentially firing off multiple network requests at once
+diff --git a/lib/validation/isValidGroupOptions.js b/lib/validation/isValidGroupOptions.js
+index 09d0595f32ee88d00f85a9ebd460ad65d0668227..7c240bdd7ba75b003b862514e6757bfbae9de9a2 100644
+--- a/lib/validation/isValidGroupOptions.js
++++ b/lib/validation/isValidGroupOptions.js
+@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.isValidGroupedPackageOptions = exports.isValidGroupOptions = void 0;
+ const format_1 = require("../logging/format");
+ function isValidGroupOptions(groups) {
++console.log('VG');
+     // Values that violate types could happen in a user-provided object
+     if (!Array.isArray(groups)) {
+         console.error('ERROR: Expected "groups" configuration setting to be an array. Received:\n' + JSON.stringify(groups));
+@@ -14,6 +15,7 @@ function isValidGroupOptions(groups) {
+             badGroups.map(group => '  ' + format_1.singleLineStringify(group)).join('\n'));
+         return false;
+     }
++    return true;
+ }
+ exports.isValidGroupOptions = isValidGroupOptions;
+ /** Validate per-package beachball options are valid for packages in groups */
