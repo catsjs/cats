@@ -1,3 +1,4 @@
+import { isObject } from "radash";
 import { loadOpts } from "./config.js";
 import { loadPlugins, validateParameters } from "./plugins.js";
 import initVars from "./vars.js";
@@ -31,6 +32,12 @@ export const init = async (rootDir = process.cwd()) => {
 
       vars.save(key, [...vars.loadOr(key, []), { title, value }]);
     };
+
+    if (isObject(protocolPlugin.hooks)) {
+      for (const hook of Object.keys(protocolPlugin.hooks)) {
+        await setup(hook, protocolPlugin.hooks[hook]);
+      }
+    }
 
     const content = (type) =>
       Object.values(contentPlugins).find(

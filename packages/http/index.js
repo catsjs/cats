@@ -1,4 +1,5 @@
 import { types } from "@catsjs/core";
+import { busywait } from "busywait";
 import agent, { apply } from "./agent.js";
 import crawl from "./crawl.js";
 import request from "./request.js";
@@ -18,6 +19,7 @@ export default {
     api: {
       required: true,
     },
+    waitFor: {},
   },
   defaults: {
     accept: undefined,
@@ -43,7 +45,7 @@ export default {
       equals,
     },
   },
-  init: (parameters, defaults) => {
+  init: (parameters, defaults, { verbose }) => {
     d = defaults;
     const api = agent(parameters.api);
 
@@ -57,6 +59,74 @@ export default {
       apply(api2, defaults);
       return compareTo(api, api2, params);
     };
+
+    if (parameters.waitFor) {
+      const paths = [];
+      const timeout = parameters.waitFor.timeout || 10;
+      const waitUntil = Date.now() + timeout * 1000;
+
+      if (typeof parameters.waitFor === "string") {
+        paths.push(parameters.waitFor);
+      } else if (parameters.waitFor.path) {
+        if (Array.isArray(parameters.waitFor.path)) {
+          paths.push(...parameters.waitFor.path);
+        } else {
+          paths.push(parameters.waitFor.path);
+        }
+      }
+      if (paths.length > 0) {
+        const success = {};
+
+        const checkFn = async () => {
+          if (Date.now() > waitUntil) {
+            return Promise.resolve(false);
+          }
+          return Promise.all(
+            paths.map(
+              (path) =>
+                success[path] ||
+                api
+                  .head(path)
+                  .accept("*/*")
+                  .expect(200)
+                  .then(() => {
+                    success[path] = true;
+                    if (verbose) {
+                      console.log(".. got 200", `(${path})`);
+                    }
+                  })
+                  .catch((e) => {
+                    if (verbose) {
+                      console.log("..", e.message, `(${path})`);
+                    }
+                    throw e;
+                  })
+            )
+          );
+        };
+
+        api.hooks = {
+          waitFor: async () => {
+            const maxChecks = Math.round(Math.log(timeout / 250) / Math.log(2));
+            const urls = paths.map((path) => api.head(path).url);
+            console.log("Waiting for successful HEAD requests to");
+            urls.forEach((url) => console.log(" -", url));
+
+            const result = await busywait(checkFn, {
+              sleepTime: 250,
+              multiplier: 2,
+              jitter: "full",
+              failMsg: "Timeout exceeded",
+            });
+
+            if (result.result === false) {
+              throw new Error(`Timeout of ${timeout}s exceeded`);
+            }
+            console.log("=> success");
+          },
+        };
+      }
+    }
 
     return api;
   },

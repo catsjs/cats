@@ -1510,6 +1510,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@catsjs/http@workspace:packages/http"
   dependencies:
+    busywait: ^4.0.0
     cheerio: ^1.0.0-rc.12
     supertest: ^6.3.3
   peerDependencies:
@@ -3856,7 +3857,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"beachball@npm:^2.33.2":
+"beachball@npm:2.33.2":
   version: 2.33.2
   resolution: "beachball@npm:2.33.2"
   dependencies:
@@ -3875,6 +3876,28 @@ __metadata:
   bin:
     beachball: bin/beachball.js
   checksum: 33e0212eaae7ede71a9ac8c8c5b376e894ed040ed77ca5af26a3dbe14872eb2c1efcda4ad8b84cc39d28a47ec3dbe96df125bd6a1ac5536a4fd98f5304161dc4
+  languageName: node
+  linkType: hard
+
+"beachball@patch:beachball@npm%3A2.33.2#./.yarn/patches/beachball-npm-2.33.2-2c2b6a1176.patch::locator=cats%40workspace%3A.":
+  version: 2.33.2
+  resolution: "beachball@patch:beachball@npm%3A2.33.2#./.yarn/patches/beachball-npm-2.33.2-2c2b6a1176.patch::version=2.33.2&hash=ddb5dd&locator=cats%40workspace%3A."
+  dependencies:
+    cosmiconfig: ^7.0.0
+    execa: ^5.0.0
+    fs-extra: ^10.0.0
+    lodash: ^4.17.15
+    minimatch: ^3.0.4
+    p-limit: ^3.0.2
+    prompts: ^2.4.2
+    semver: ^7.0.0
+    toposort: ^2.0.2
+    uuid: ^9.0.0
+    workspace-tools: ^0.34.2
+    yargs-parser: ^21.0.0
+  bin:
+    beachball: bin/beachball.js
+  checksum: 072a03095ff385170df16c746e386d0a156124bf84507f32b5eae868f8ddcc5fdebbb0ad7965b02d2e553024782b7b868adedc3b3e5098c4b5766c9e11877ad2
   languageName: node
   linkType: hard
 
@@ -4201,6 +4224,13 @@ __metadata:
   peerDependencies:
     esbuild: ">=0.13"
   checksum: 046680337faeb511599778999d265cab89567f71a1f52780748fea6103ca6919bde5b6dd5bf00ef85c6a50b754852f1d4dc4d7ab6b3331c3c05e7f316b795ead
+  languageName: node
+  linkType: hard
+
+"busywait@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "busywait@npm:4.0.0"
+  checksum: 74b58185371e9f570ae0793f0dfea1508504f30215c816d46a80ca8bc99e90ccc81442c51b6390f0b8726fe5d1b4d71e734943f319cb0f871b3220846de3d6bf
   languageName: node
   linkType: hard
 

@@ -1,5 +1,6 @@
 import { merge } from "merge-anything";
 import path from "path";
+import os from "os";
 
 export const types = {
   protocol: "protocol",
@@ -72,8 +73,9 @@ const loadPlugin = async (parameters, label, dsl, opts) => {
     .then((m) => m.default)
     .catch(async (e) => {
       const ext = path.extname(module) === "" ? ".js" : "";
-      //TODO: prepend with file:/ on windows
-      return await import(path.resolve(opts.rootDir, module + ext))
+      const pre = os.platform() === "win32" ? "file:/" : "";
+
+      return await import(pre + path.resolve(opts.rootDir, module + ext))
         .then((m) => m.default)
         .catch(() => {});
     });
@@ -89,7 +91,7 @@ const loadPlugin = async (parameters, label, dsl, opts) => {
     console.log("PLUGIN", plugin);
   }
 
-  return plugin.init ? plugin.init(initParams, defaults) : plugin;
+  return plugin.init ? plugin.init(initParams, defaults, opts) : plugin;
 };
 
 export const loadPlugins = async (opts) => {
