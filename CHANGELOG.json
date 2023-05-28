@@ -2,6 +2,21 @@
   "name": "cats",
   "entries": [
     {
+      "date": "Sun, 28 May 2023 13:38:49 GMT",
+      "tag": "cats_v1.0.0-beta.8",
+      "version": "1.0.0-beta.8",
+      "comments": {
+        "prerelease": [
+          {
+            "author": "zahnen@interactive-instruments.de",
+            "package": "@catsjs/core",
+            "commit": "44d6a3d0fe88a70e68d03ab17425f1bae96949e2",
+            "comment": "report options"
+          }
+        ]
+      }
+    },
+    {
       "date": "Sun, 28 May 2023 12:10:51 GMT",
       "tag": "cats_v1.0.0-beta.7",
       "version": "1.0.0-beta.7",

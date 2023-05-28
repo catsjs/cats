@@ -1,8 +1,17 @@
 # Change Log - cats
 
-This log was last generated on Sun, 28 May 2023 12:10:51 GMT and should not be manually modified.
+This log was last generated on Sun, 28 May 2023 13:38:49 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 1.0.0-beta.8
+
+Sun, 28 May 2023 13:38:49 GMT
+
+### Changes
+
+- `@catsjs/core`
+  - report options
 
 ## 1.0.0-beta.7
 
