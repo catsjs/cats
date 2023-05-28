@@ -2,6 +2,27 @@
   "name": "cats",
   "entries": [
     {
+      "date": "Sun, 28 May 2023 12:10:51 GMT",
+      "tag": "cats_v1.0.0-beta.7",
+      "version": "1.0.0-beta.7",
+      "comments": {
+        "prerelease": [
+          {
+            "author": "zahnen@interactive-instruments.de",
+            "package": "@catsjs/core",
+            "commit": "7b6c2fd4b5134794047911e155c2b5f8e0e90e4f",
+            "comment": "report options"
+          },
+          {
+            "author": "zahnen@interactive-instruments.de",
+            "package": "@catsjs/http",
+            "commit": "7b6c2fd4b5134794047911e155c2b5f8e0e90e4f",
+            "comment": "add waitFor parameter"
+          }
+        ]
+      }
+    },
+    {
       "date": "Mon, 22 May 2023 12:45:31 GMT",
       "tag": "cats_v1.0.0-beta.6",
       "version": "1.0.0-beta.6",
