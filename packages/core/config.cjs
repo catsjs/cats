@@ -15,6 +15,8 @@ const loadEnv = () => {
     } else if (key.startsWith("CATS_VARS_")) {
       if (!env.vars) env.vars = {};
       env.vars[key.replace("CATS_VARS_", "").toLowerCase()] = process.env[key];
+    } else if (key === "CATS_REPORT_DIR") {
+      env.report = { dir: process.env[key] };
     }
   });
 

@@ -62,7 +62,7 @@ const reportOpts = {
   reportDir: report.dir || "report",
   reportFilename:
     report.name === "full"
-      ? `[datetime]-[status]-${name}`
+      ? `[datetime]_[status]_${name}`
       : report.name === "project"
       ? `${name}`
       : report.name === "index"
