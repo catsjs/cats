@@ -1,5 +1,5 @@
 import { isObject } from "radash";
-import { loadOpts } from "./config.js";
+import { loadOpts } from "./config.cjs";
 import { loadPlugins, validateParameters } from "./plugins.js";
 import initVars from "./vars.js";
 import initCache from "./cache.js";
