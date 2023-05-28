@@ -28,22 +28,10 @@ function getFilename({ reportDir, reportFilename, timestamp }, reportData) {
 
   let filename = reportFilename || DEFAULT_FILENAME;
 
-  const hasDatetimeReplacement = filename.includes(DATETIME_REPLACE);
-
   const now = new Date();
-  //const offsetMs = now.getTimezoneOffset() * 60 * 1000;
-  //const dateLocal = new Date(now.getTime() - offsetMs);
-  const ts = now
-    .toISOString()
-    .slice(0, 19)
-    .replace(/-/g, "/")
-    .replace("T", " ");
-
-  if (timestamp !== false && timestamp !== "false") {
-    if (!hasDatetimeReplacement) {
-      filename = `${filename}_${DATETIME_REPLACE}`;
-    }
-  }
+  const offsetMs = now.getTimezoneOffset() * 60 * 1000;
+  const dateLocal = new Date(now.getTime() - offsetMs);
+  const ts = dateLocal.toISOString().slice(0, 19);
 
   const specFilename = path
     .basename(reportData.results[0].file || "")

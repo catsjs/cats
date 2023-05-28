@@ -4,6 +4,7 @@ const Base = require("mocha/lib/reporters/base");
 
 const marge = require("./marge.cjs");
 const packageJson = require("./package.json");
+const { loadOptsSync } = require("./config.cjs");
 
 function copyOptions(source, target) {
   if (!target) {
@@ -56,7 +57,23 @@ function done(output, options, config, failures, exit) {
     });
 }
 
-//TODO: option to use either index or [datetime]-[status]
+const { name, report = {} } = loadOptsSync(process.cwd());
+const reportOpts = {
+  reportDir: report.dir || "report",
+  reportFilename:
+    report.name === "full"
+      ? `[datetime]-[status]-${name}`
+      : report.name === "project"
+      ? `${name}`
+      : report.name === "index"
+      ? "index"
+      : report.dir
+      ? `${name}`
+      : "index",
+  saveJson: report.json === true,
+  saveHtml: report.html !== false,
+};
+
 /**
  * Wrapper for the mochawesome reporter:
  * - hardcode the reporter options
@@ -65,15 +82,10 @@ function done(output, options, config, failures, exit) {
  */
 function CatsReporter(runner, options) {
   options.reporterOptions = {
-    reportDir: "report",
-    //reportFilename: "[datetime]-[status]-todo_[name]",
-    reportFilename: "index",
-    //timestamp: "yyyy-mm-dd'T'HH:MM:ss", // "isoDateTime",
+    ...reportOpts,
     inline: true,
     code: true,
     charts: true,
-    saveJson: true,
-    saveHtml: true,
     htmlModule: "@catsjs/report",
     //htmlModule: "mochawesome-report-generator",
     showSkipped: true,
