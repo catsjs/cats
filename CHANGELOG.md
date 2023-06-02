@@ -1,8 +1,19 @@
 # Change Log - cats
 
-This log was last generated on Sun, 28 May 2023 13:38:49 GMT and should not be manually modified.
+This log was last generated on Fri, 02 Jun 2023 15:18:58 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 1.0.0-beta.9
+
+Fri, 02 Jun 2023 15:18:58 GMT
+
+### Changes
+
+- `@catsjs/core`
+  - yaml nested suites
+- `@catsjs/report`
+  - fix title overflow
 
 ## 1.0.0-beta.8
 

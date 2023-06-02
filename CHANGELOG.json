@@ -2,6 +2,27 @@
   "name": "cats",
   "entries": [
     {
+      "date": "Fri, 02 Jun 2023 15:18:58 GMT",
+      "tag": "cats_v1.0.0-beta.9",
+      "version": "1.0.0-beta.9",
+      "comments": {
+        "prerelease": [
+          {
+            "author": "zahnen@interactive-instruments.de",
+            "package": "@catsjs/core",
+            "commit": "48cdeb17e3814f00a87f9a1269eee3de991518eb",
+            "comment": "yaml nested suites"
+          },
+          {
+            "author": "zahnen@interactive-instruments.de",
+            "package": "@catsjs/report",
+            "commit": "48cdeb17e3814f00a87f9a1269eee3de991518eb",
+            "comment": "fix title overflow"
+          }
+        ]
+      }
+    },
+    {
       "date": "Sun, 28 May 2023 13:38:49 GMT",
       "tag": "cats_v1.0.0-beta.8",
       "version": "1.0.0-beta.8",
