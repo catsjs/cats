@@ -52,6 +52,9 @@ const Test = ({ test, enableCode, isNested, parentPath, file, Code }) => {
 
   const path = [...parentPath, title];
 
+  const description2 =
+    title && title.length > 75 && !description ? title : description;
+
   return (
     <Expandable
       id={uuid}
@@ -73,7 +76,7 @@ const Test = ({ test, enableCode, isNested, parentPath, file, Code }) => {
         smaller={isNested}
       />
       <Details
-        description={description}
+        description={description2}
         passed={pass}
         failed={fail}
         error={err}
