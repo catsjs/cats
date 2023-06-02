@@ -108,10 +108,17 @@ const suite = ({
   timeout,
   slow,
   vars,
+  suites,
   tests,
   ...parameterDefaults
 }) => {
   describe({ title, description, timeout, slow }, () => {
+    if (Array.isArray(suites)) {
+      for (let i = 0; i < suites.length; i++) {
+        suite(suites[i]);
+      }
+      return;
+    }
     if (Array.isArray(tests)) {
       for (let i = 0; i < tests.length; i++) {
         const {
